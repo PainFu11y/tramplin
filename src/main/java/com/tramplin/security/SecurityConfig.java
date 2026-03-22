@@ -1,4 +1,4 @@
-package com.tramplin.config;
+package com.tramplin.security;
 
 import com.tramplin.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
