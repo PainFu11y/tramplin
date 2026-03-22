@@ -1,50 +1,103 @@
 package com.tramplin.service;
 
+import com.tramplin.dto.employer.request.RegisterEmployerRequest;
 import com.tramplin.dto.request.LoginRequest;
 import com.tramplin.dto.request.RefreshTokenRequest;
-import com.tramplin.dto.request.RegisterRequest;
 import com.tramplin.dto.response.AuthResponse;
-import com.tramplin.entity.User;
+import com.tramplin.dto.seeker.request.RegisterSeekerRequest;
+import com.tramplin.entity.*;
+import com.tramplin.enums.Role;
 import com.tramplin.enums.UserStatus;
+import com.tramplin.exception.CompanyAlreadyExistsException;
 import com.tramplin.exception.EmailAlreadyExistsException;
 import com.tramplin.exception.InvalidTokenException;
-import com.tramplin.repository.UserRepository;
+import com.tramplin.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final SeekerRepository seekerRepository;
+    private final EmployerRepository employerRepository;
+    private final CompanyRepository companyRepository;
+    private final CompanyVerificationRepository companyVerificationRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthResponse register(RegisterRequest request) {
+    @Transactional
+    public AuthResponse registerSeeker(RegisterSeekerRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException(request.getEmail());
         }
 
-        User user = User.builder()
+        User user = userRepository.save(User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
+                .role(Role.SEEKER)
                 .status(UserStatus.ACTIVE)
-                .build();
+                .build());
 
-        userRepository.save(user);
+        seekerRepository.save(Seeker.builder()
+                .user(user)
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .isPrivateProfile(false)
+                .build());
 
-        String accessToken = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        return buildAuthResponse(user);
+    }
 
-        return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+    @Transactional
+    public AuthResponse registerEmployer(RegisterEmployerRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyExistsException(request.getEmail());
+        }
+
+        if (companyRepository.existsByName(request.getCompanyName())) {
+            throw new CompanyAlreadyExistsException(request.getCompanyName());
+        }
+
+        User user = userRepository.save(User.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.EMPLOYER)
+                .status(UserStatus.ACTIVE)
+                .build());
+
+        Company company = companyRepository.save(Company.builder()
+                .name(request.getCompanyName())
+                .isVerified(false)
+                .build());
+
+        if (request.getWebsiteUrl() != null && !request.getWebsiteUrl().isBlank()) {
+            company.getSocials().add(CompanySocial.builder()
+                    .company(company)
+                    .name("website")
+                    .value(request.getWebsiteUrl())
+                    .build());
+            companyRepository.save(company);
+        }
+
+        employerRepository.save(Employer.builder()
+                .user(user)
+                .company(company)
+                .build());
+
+        companyVerificationRepository.save(CompanyVerification.builder()
+                .company(company)
+                .submittedBy(user)
+                .taxNumber(request.getTaxNumber())
+                .build());
+
+        return buildAuthResponse(user);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -58,13 +111,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
 
-        String accessToken = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-
-        return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return buildAuthResponse(user);
     }
 
     public AuthResponse refresh(RefreshTokenRequest request) {
@@ -84,12 +131,13 @@ public class AuthService {
             throw new InvalidTokenException();
         }
 
-        String newAccessToken = jwtService.generateToken(user);
-        String newRefreshToken = jwtService.generateRefreshToken(user);
+        return buildAuthResponse(user);
+    }
 
+    private AuthResponse buildAuthResponse(User user) {
         return AuthResponse.builder()
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
+                .accessToken(jwtService.generateToken(user))
+                .refreshToken(jwtService.generateRefreshToken(user))
                 .build();
     }
 }
