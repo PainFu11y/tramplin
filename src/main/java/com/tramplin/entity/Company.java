@@ -2,6 +2,8 @@ package com.tramplin.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,8 +26,8 @@ public class Company {
     private Boolean isVerified;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CompanySocial> socials;
+    private List<CompanySocial> socials = new ArrayList<>();
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CompanySphere> spheres;
+    private List<CompanySphere> spheres = new ArrayList<>();
 }
