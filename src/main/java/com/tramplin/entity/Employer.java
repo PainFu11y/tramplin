@@ -20,7 +20,4 @@ public class Employer {
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
-
-    @Column(length = 255)
-    private String position;
 }

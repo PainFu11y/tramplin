@@ -2,6 +2,7 @@ package com.tramplin.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "companies_spheres")
@@ -9,6 +10,9 @@ import lombok.*;
 public class CompanySphere {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
