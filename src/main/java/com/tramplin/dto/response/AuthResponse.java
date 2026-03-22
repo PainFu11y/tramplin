@@ -2,7 +2,11 @@ package com.tramplin.dto.response;
 
 import lombok.*;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class AuthResponse {
     private String accessToken;
     private String refreshToken;
