@@ -1,5 +1,6 @@
 package com.tramplin.entity;
 
+import com.tramplin.enums.VerificationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.UUID;
@@ -23,4 +24,8 @@ public class CompanyVerification {
 
     @Column(name = "tax_number")
     private Integer taxNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private VerificationStatus status = VerificationStatus.PENDING;
 }
