@@ -8,6 +8,7 @@ import com.tramplin.dto.seeker.request.RegisterSeekerRequest;
 import com.tramplin.entity.*;
 import com.tramplin.enums.Role;
 import com.tramplin.enums.UserStatus;
+import com.tramplin.enums.VerificationStatus;
 import com.tramplin.exception.CompanyAlreadyExistsException;
 import com.tramplin.exception.EmailAlreadyExistsException;
 import com.tramplin.exception.InvalidTokenException;
@@ -95,6 +96,7 @@ public class AuthService {
                 .company(company)
                 .submittedBy(user)
                 .taxNumber(request.getTaxNumber())
+                .status(VerificationStatus.PENDING)
                 .build());
 
         return buildAuthResponse(user);
