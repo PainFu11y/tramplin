@@ -9,4 +9,5 @@ import java.util.UUID;
 
 public interface OpportunityRepository extends JpaRepository<Opportunity, UUID>,
         JpaSpecificationExecutor<Opportunity> {
+
 }
