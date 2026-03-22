@@ -1,9 +1,10 @@
 package com.tramplin.controller;
 
+import com.tramplin.dto.employer.request.RegisterEmployerRequest;
 import com.tramplin.dto.request.LoginRequest;
 import com.tramplin.dto.request.RefreshTokenRequest;
-import com.tramplin.dto.request.RegisterRequest;
 import com.tramplin.dto.response.AuthResponse;
+import com.tramplin.dto.seeker.request.RegisterSeekerRequest;
 import com.tramplin.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,15 +24,26 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(summary = "Register a new user")
+    @Operation(summary = "Register as a seeker")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "User registered successfully"),
+            @ApiResponse(responseCode = "201", description = "Seeker registered successfully"),
             @ApiResponse(responseCode = "400", description = "Validation error"),
             @ApiResponse(responseCode = "409", description = "Email already in use")
     })
-    @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
+    @PostMapping("/register/seeker")
+    public ResponseEntity<AuthResponse> registerSeeker(@Valid @RequestBody RegisterSeekerRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerSeeker(request));
+    }
+
+    @Operation(summary = "Register as an employer")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Employer registered successfully"),
+            @ApiResponse(responseCode = "400", description = "Validation error"),
+            @ApiResponse(responseCode = "409", description = "Email or company already exists")
+    })
+    @PostMapping("/register/employer")
+    public ResponseEntity<AuthResponse> registerEmployer(@Valid @RequestBody RegisterEmployerRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerEmployer(request));
     }
 
     @Operation(summary = "Login with email and password")
