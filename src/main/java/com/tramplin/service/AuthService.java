@@ -51,6 +51,8 @@ public class AuthService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .isPrivateProfile(false)
+                .isApplicationsHistoryPrivate(false)
+                .isRecommendationsPrivate(false)
                 .build());
 
         return buildAuthResponse(user);
