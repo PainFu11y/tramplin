@@ -21,7 +21,7 @@ public interface ConnectionRepository extends JpaRepository<Connection, UUID> {
                                     OR LOWER(c.receiver.firstName) LIKE LOWER(CONCAT('%', :search, '%'))
                                     OR LOWER(c.receiver.lastName) LIKE LOWER(CONCAT('%', :search, '%'))
             """)
-    List<Connection> findConnectionBy( @Param("seekerId") UUID seekerId,
+    List<Connection> findConnectionsBy( @Param("seekerId") UUID seekerId,
                                        @Param("status") ConnectionStatus status,
                                        @Param("search") String search);
 }
