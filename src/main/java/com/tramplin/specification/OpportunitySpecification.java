@@ -8,6 +8,7 @@ import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
+import java.util.UUID;
 
 public class OpportunitySpecification {
 
@@ -25,6 +26,17 @@ public class OpportunitySpecification {
         };
     }
 
+    public static Specification<Opportunity> searchByKeyword(String keyword) {
+        return (root, query, cb) -> {
+            if (keyword == null || keyword.isBlank()) return null;
+            String pattern = "%" + keyword.toLowerCase() + "%";
+            return cb.or(
+                    cb.like(cb.lower(root.get("title")), pattern),
+                    cb.like(cb.lower(root.get("description")), pattern)
+            );
+        };
+    }
+
     public static Specification<Opportunity> salaryFrom(Integer salaryFrom) {
         return (root, query, cb) ->
                 salaryFrom == null ? null : cb.greaterThanOrEqualTo(root.get("salary"), salaryFrom);
@@ -39,4 +51,10 @@ public class OpportunitySpecification {
         return (root, query, cb) ->
                 cb.equal(root.get("status"), OpportunityStatus.ACTIVE);
     }
+
+    public static Specification<Opportunity> belongsToCompany(UUID companyId) {
+        return (root, query, cb) ->
+                companyId == null ? null : cb.equal(root.get("company").get("id"), companyId);
+    }
+
 }
