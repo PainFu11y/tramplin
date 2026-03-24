@@ -12,16 +12,19 @@ import java.util.UUID;
 public interface ConnectionRepository extends JpaRepository<Connection, UUID> {
 
     @Query("""
-                select c from Connection c
-                where c.status = :status
-                and (c.requester.id = :seekerId or c.receiver.id = :seekerId)
-                and :search IS NULL OR :search = ''
-                                    OR LOWER(c.requester.firstName) LIKE LOWER(CONCAT('%', :search, '%'))
-                                    OR LOWER(c.requester.lastName) LIKE LOWER(CONCAT('%', :search, '%'))
-                                    OR LOWER(c.receiver.firstName) LIKE LOWER(CONCAT('%', :search, '%'))
-                                    OR LOWER(c.receiver.lastName) LIKE LOWER(CONCAT('%', :search, '%'))
+            SELECT c FROM Connection c
+            WHERE c.status = :status
+            AND (c.requester.id = :seekerId OR c.receiver.id = :seekerId)
+            AND (
+                :search IS NULL OR :search = ''
+                OR LOWER(c.requester.firstName) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(c.requester.lastName) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(c.receiver.firstName) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(c.receiver.lastName) LIKE LOWER(CONCAT('%', :search, '%'))
+            )
             """)
-    List<Connection> findConnectionsBy( @Param("seekerId") UUID seekerId,
-                                       @Param("status") ConnectionStatus status,
-                                       @Param("search") String search);
+    List<Connection> findConnectionsBySeeker(
+            @Param("seekerId") UUID seekerId,
+            @Param("status") ConnectionStatus status,
+            @Param("search") String search);
 }
