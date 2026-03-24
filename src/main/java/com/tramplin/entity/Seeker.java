@@ -38,4 +38,12 @@ public class Seeker {
 
     @Column(name = "is_private_profile")
     private Boolean isPrivateProfile;
+
+    @Column(name = "is_applications_history_private")
+    @Builder.Default
+    private Boolean isApplicationsHistoryPrivate = false;
+
+    @Column(name = "is_recomendations_private")
+    @Builder.Default
+    private Boolean isRecommendationsPrivate = false;
 }
