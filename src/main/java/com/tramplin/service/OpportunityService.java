@@ -146,6 +146,18 @@ public class OpportunityService {
         return tagRepository.findByNameIn(tagNames);
     }
 
+    public Page<OpportunityResponse> getCompanyOpportunities(
+            UUID companyId,
+            String search,
+            Pageable pageable) {
+
+        Specification<Opportunity> spec = Specification
+                .where(OpportunitySpecification.belongsToCompany(companyId))
+                .and(OpportunitySpecification.searchByKeyword(search));
+
+        return opportunityRepository.findAll(spec, pageable).map(this::toResponse);
+    }
+
     private OpportunityResponse toResponse(Opportunity o) {
         return OpportunityResponse.builder()
                 .id(o.getId())

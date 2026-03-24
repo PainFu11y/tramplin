@@ -71,4 +71,14 @@ public class OpportunityController {
             @PathVariable UUID id) {
         return ResponseEntity.ok(opportunityService.archive(currentUser, id));
     }
+
+    @Operation(summary = "Get company opportunities with search")
+    @GetMapping("/company/{companyId}")
+    public ResponseEntity<Page<OpportunityResponse>> getCompanyOpportunities(
+            @PathVariable UUID companyId,
+            @RequestParam(required = false) String search,
+            @PageableDefault(size = 20, sort = "creationDate") Pageable pageable) {
+        return ResponseEntity.ok(opportunityService.getCompanyOpportunities(
+                companyId, search, pageable));
+    }
 }
