@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -19,5 +20,11 @@ public class AdminController {
     @Operation(summary = "Get admin profile", description = "Returns the profile of the currently logged-in admin")
     public AdminResponse getAdminProfile(@RequestParam UUID userId) {
         return adminService.getAdminProfile(userId);
+    }
+
+    @GetMapping("/moderators")
+    @Operation(summary = "Get all moderators", description = "Returns a list of all moderators (accessible only by super admin)")
+    public List<AdminResponse> getAllModerators(@RequestParam UUID superAdminUserId) {
+        return adminService.getAllModerators(superAdminUserId);
     }
 }
