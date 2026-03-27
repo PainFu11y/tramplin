@@ -30,17 +30,25 @@ public class OpportunityController {
 
     private final OpportunityService opportunityService;
 
-    @Operation(summary = "Get opportunities with filters")
     @GetMapping
     public ResponseEntity<Page<OpportunityResponse>> getOpportunities(
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) WorkFormat workFormat,
             @RequestParam(required = false) List<String> tags,
             @RequestParam(required = false) Integer salaryFrom,
             @RequestParam(required = false) Integer salaryTo,
-            @PageableDefault(size = 20, sort = "creationDate") Pageable pageable) {
+            Pageable pageable) {
 
-        return ResponseEntity.ok(opportunityService.getOpportunities(
-                workFormat, tags, salaryFrom, salaryTo, pageable));
+        return ResponseEntity.ok(
+                opportunityService.getOpportunities(
+                        search,
+                        workFormat,
+                        tags,
+                        salaryFrom,
+                        salaryTo,
+                        pageable
+                )
+        );
     }
 
     @Operation(summary = "Create a new opportunity")

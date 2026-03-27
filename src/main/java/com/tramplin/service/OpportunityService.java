@@ -36,6 +36,7 @@ public class OpportunityService {
     private final TagRepository tagRepository;
 
     public Page<OpportunityResponse> getOpportunities(
+            String search,
             WorkFormat workFormat,
             List<String> tags,
             Integer salaryFrom,
@@ -44,6 +45,7 @@ public class OpportunityService {
 
         Specification<Opportunity> spec = Specification
                 .where(OpportunitySpecification.isActive())
+                .and(OpportunitySpecification.searchByKeyword(search))
                 .and(OpportunitySpecification.hasWorkFormat(workFormat))
                 .and(OpportunitySpecification.hasTags(tags))
                 .and(OpportunitySpecification.salaryFrom(salaryFrom))
