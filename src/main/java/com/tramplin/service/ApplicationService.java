@@ -2,6 +2,7 @@ package com.tramplin.service;
 
 import com.tramplin.dto.application.request.UpdateApplicationStatusRequest;
 import com.tramplin.dto.application.response.ApplicationResponse;
+import com.tramplin.dto.application.response.SeekerApplicationResponse;
 import com.tramplin.entity.Application;
 import com.tramplin.entity.Employer;
 import com.tramplin.entity.User;
@@ -9,6 +10,8 @@ import com.tramplin.exception.ResourceNotFoundException;
 import com.tramplin.repository.ApplicationRepository;
 import com.tramplin.repository.EmployerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +60,33 @@ public class ApplicationService {
         applicationRepository.save(application);
 
         return toResponse(application);
+    }
+
+    public List<SeekerApplicationResponse> getSeekerApplications(UUID seekerId) {
+        List<Application> applications = applicationRepository.findBySeekerId(seekerId);
+
+        return applications.stream()
+                .map(a -> SeekerApplicationResponse.builder()
+                        .applicationId(a.getId())
+                        .opportunityId(a.getOpportunity().getId())
+                        .opportunityTitle(a.getOpportunity().getTitle())
+                        .status(a.getStatus())
+                        .coverLetter(a.getCoverLetter())
+                        .companyName(a.getOpportunity().getCompany().getName())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public Page<SeekerApplicationResponse> getSeekerApplications(UUID seekerId, Pageable pageable) {
+        return applicationRepository.findBySeekerId(seekerId, pageable)
+                .map(a -> SeekerApplicationResponse.builder()
+                        .applicationId(a.getId())
+                        .opportunityId(a.getOpportunity().getId())
+                        .opportunityTitle(a.getOpportunity().getTitle())
+                        .status(a.getStatus())
+                        .coverLetter(a.getCoverLetter())
+                        .companyName(a.getOpportunity().getCompany().getName())
+                        .build());
     }
 
     private Employer getEmployer(User currentUser) {

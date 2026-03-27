@@ -1,6 +1,8 @@
 package com.tramplin.repository;
 
 import com.tramplin.entity.Application;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +13,6 @@ import java.util.UUID;
 public interface ApplicationRepository extends JpaRepository<Application, UUID> {
     List<Application> findByOpportunityId(UUID opportunityId);
     List<Application> findByOpportunityCompanyId(UUID companyId);
+    List<Application> findBySeekerId(UUID seekerId);
+    Page<Application> findBySeekerId(UUID seekerId, Pageable pageable);
 }
