@@ -1,12 +1,14 @@
 package com.tramplin.repository;
 
+import com.tramplin.entity.Admin;
 import com.tramplin.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface AdminRepository extends JpaRepository<User, UUID> {
-    boolean existsByEmail(String email);
+public interface AdminRepository extends JpaRepository<Admin, UUID> {
+    Optional<Admin> findByUserId(UUID id);
 }

@@ -1,7 +1,9 @@
 package com.tramplin.service;
 
+import com.tramplin.dto.admin.response.AdminResponse;
 import com.tramplin.dto.employer.response.EmployerResponse;
 import com.tramplin.dto.seeker.response.SeekerResponse;
+import com.tramplin.entity.Admin;
 import com.tramplin.entity.Seeker;
 import com.tramplin.entity.Employer;
 import com.tramplin.entity.User;
@@ -19,40 +21,16 @@ import java.util.UUID;
 public class AdminService {
 
     private final AdminRepository adminRepository;
-    private final SeekerRepository seekerRepository;
-    private final EmployerRepository employerRepository;
 
 
-    public Object getUserProfile(UUID userId) {
-        User user = adminRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    public AdminResponse getAdminProfile(UUID userId) {
+        Admin admin = adminRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Admin profile not found"));
 
-        Seeker seeker = seekerRepository.findByUserId(userId).orElse(null);
-        if (seeker != null) {
-            return SeekerResponse.builder()
-                    .id(seeker.getId())
-                    .firstName(seeker.getFirstName())
-                    .lastName(seeker.getLastName())
-                    .university(seeker.getUniversity())
-                    .graduationYear(seeker.getGraduationYear())
-                    .course(seeker.getCourse())
-                    .portfolioUrl(seeker.getPortfolioUrl())
-                    .isPrivateProfile(seeker.getIsPrivateProfile())
-                    .isApplicationsHistoryPrivate(seeker.getIsApplicationsHistoryPrivate())
-                    .isRecommendationsPrivate(seeker.getIsRecommendationsPrivate())
-                    .build();
-        }
-
-        Employer employer = employerRepository.findByUserId(userId).orElse(null);
-        if (employer != null) {
-            return EmployerResponse.builder()
-                    .id(employer.getId())
-                    .companyId(employer.getCompany().getId())
-                    .companyName(employer.getCompany().getName())
-                    .companyVerified(employer.getCompany().getIsVerified())
-                    .build();
-        }
-
-        throw new ResourceNotFoundException("Profile not found for this user");
+        return AdminResponse.builder()
+                .id(admin.getId())
+                .userId(admin.getUser().getId())
+                .email(admin.getUser().getEmail())
+                .build();
     }
 }
