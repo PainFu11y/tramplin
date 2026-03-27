@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class SeekerService {
@@ -18,6 +20,14 @@ public class SeekerService {
 
     public SeekerResponse getProfile(User currentUser) {
         Seeker seeker = getSeeker(currentUser);
+        return toResponse(seeker);
+    }
+
+    public SeekerResponse getSeekerById(UUID id) {
+
+        Seeker seeker = seekerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Seeker not found"));
+
         return toResponse(seeker);
     }
 
@@ -54,7 +64,7 @@ public class SeekerService {
                 .graduationYear(s.getGraduationYear())
                 .course(s.getCourse())
                 .portfolioUrl(s.getPortfolioUrl())
-                .isProfilePrivate(s.getIsPrivateProfile())
+                .isPrivateProfile(s.getIsPrivateProfile())
                 .isApplicationsHistoryPrivate(s.getIsApplicationsHistoryPrivate())
                 .isRecommendationsPrivate(s.getIsRecommendationsPrivate())
                 .build();
