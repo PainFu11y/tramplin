@@ -28,11 +28,22 @@ public class OpportunitySpecification {
 
     public static Specification<Opportunity> searchByKeyword(String keyword) {
         return (root, query, cb) -> {
+
             if (keyword == null || keyword.isBlank()) return null;
+
             String pattern = "%" + keyword.toLowerCase() + "%";
+
+            Join<Object, Object> companyJoin = root.join("company", JoinType.LEFT);
+            Join<Object, Object> tagsJoin = root.join("tags", JoinType.LEFT);
+
+            query.distinct(true);
+
             return cb.or(
                     cb.like(cb.lower(root.get("title")), pattern),
-                    cb.like(cb.lower(root.get("description")), pattern)
+                    cb.like(cb.lower(root.get("description")), pattern),
+                    cb.like(cb.lower(root.get("city")), pattern),
+                    cb.like(cb.lower(companyJoin.get("name")), pattern),
+                    cb.like(cb.lower(tagsJoin.get("name")), pattern)
             );
         };
     }
