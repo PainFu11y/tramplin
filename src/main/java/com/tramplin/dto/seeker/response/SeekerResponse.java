@@ -14,7 +14,7 @@ public class SeekerResponse {
     private LocalDate graduationYear;
     private String course;
     private String portfolioUrl;
-    private Boolean isProfilePrivate;
+    private Boolean isPrivateProfile;
     private Boolean isApplicationsHistoryPrivate;
     private Boolean isRecommendationsPrivate;
 }
