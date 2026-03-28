@@ -28,5 +28,7 @@ public class SeekerController {
         return ResponseEntity.ok(
                 seekerService.getSeekerById(id)
         );
+
+
     }
 }

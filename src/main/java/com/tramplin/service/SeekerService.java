@@ -26,7 +26,7 @@ public class SeekerService {
     public SeekerResponse getSeekerById(UUID id) {
 
         Seeker seeker = seekerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Seeker not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Seeker not found"));
 
         return toResponse(seeker);
     }
