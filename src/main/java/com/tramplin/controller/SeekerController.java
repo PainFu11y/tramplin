@@ -1,34 +1,47 @@
 package com.tramplin.controller;
 
+import com.tramplin.dto.seeker.request.UpdateSeekerRequest;
 import com.tramplin.dto.seeker.response.SeekerResponse;
 import com.tramplin.entity.User;
 import com.tramplin.service.SeekerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/seekers")
+@RequestMapping("/api/seekers")
 @RequiredArgsConstructor
 public class SeekerController {
 
     private final SeekerService seekerService;
 
+    @GetMapping("/me")
+    @Operation(summary = "Get current seeker profile")
+    public SeekerResponse getMyProfile(
+            @AuthenticationPrincipal User currentUser
+    ) {
+        return seekerService.getProfile(currentUser);
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<SeekerResponse> getSeekerById(
-            @PathVariable UUID id,
-            @AuthenticationPrincipal User currentUser) {
+    @Operation(summary = "Get seeker profile by ID")
+    public SeekerResponse getSeekerById(
+            @Parameter(description = "Seeker ID", required = true)
+            @PathVariable UUID id
+    ) {
+        return seekerService.getSeekerById(id);
+    }
 
-        return ResponseEntity.ok(
-                seekerService.getSeekerById(id)
-        );
-
-
+    @PutMapping("/me")
+    @Operation(summary = "Update current seeker profile")
+    public SeekerResponse updateProfile(
+            @AuthenticationPrincipal User currentUser,
+            @RequestBody UpdateSeekerRequest request
+    ) {
+        return seekerService.updateProfile(currentUser, request);
     }
 }

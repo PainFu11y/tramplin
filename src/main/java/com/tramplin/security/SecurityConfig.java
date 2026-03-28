@@ -4,6 +4,7 @@ import com.tramplin.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -36,6 +37,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/opportunities").permitAll()
                         .requestMatchers("/api/companies/**").permitAll()
+                        .requestMatchers("/api/seekers/applications/**").permitAll()
+                        .requestMatchers("/api/favourites/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
@@ -44,6 +47,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/employer/**").hasRole("EMPLOYER")
                         .requestMatchers("/api/seeker/**").hasRole("SEEKER")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/users/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/favourites/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/favourites/**").hasRole("SEEKER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
