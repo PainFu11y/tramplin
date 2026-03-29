@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    container_name: tramplin_db
+    environment:
+      POSTGRES_DB: tramplin_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: java
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: tramplin_app
+    ports:
+      - "8088:8088"
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/tramplin_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: java
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: 86400000
+      JWT_REFRESH_EXPIRATION: 604800000
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
